@@ -15,7 +15,7 @@ var graphics_offset: Vector3 = Vector3.ZERO
 var graphics_pitch_rotation: float = 0.0
 var total_mass: float = 0.0
 var inertia: Vector3 = Vector3.ZERO
-
+var current_turbo_tier = 0
 var parent_unmodified_car = null
 
 @onready var aero = $Aero

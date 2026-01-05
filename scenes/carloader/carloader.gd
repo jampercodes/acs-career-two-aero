@@ -520,11 +520,11 @@ func _write_engine_ini(data_dir: String, eng: CarEngine) -> bool:
 	text += "MINIMUM=%d\n" % eng.minimum_rpm
 	
 	# Add DEFAULT_TURBO_ADJUSTMENT if we have a turbo
-	if not eng.turbos.is_empty() or eng.current_turbo_tier != "":
+	if eng.has_turbo():
 		text += "DEFAULT_TURBO_ADJUSTMENT=0.5\n"
 	
-	var mult := eng.get_hp_multiplier()
-	text += "; TUNER_POWER=%.0f bhp (mult=%.3f)\n" % [eng.current_hp, mult]
+	var hp_mult := eng.get_hp_multiplier()
+	text += "; TUNER_POWER=%.0f bhp (mult=%.3f)\n" % [eng.current_hp, hp_mult]
 	text += "\n"
 	
 	# [COAST_REF]
@@ -549,8 +549,49 @@ func _write_engine_ini(data_dir: String, eng: CarEngine) -> bool:
 		text += "FILENAME=coast.lut\n"
 	text += "\n"
 	
-	# [TURBO_*] - write stock turbos or upgraded turbo
-	if eng.current_turbo_tier == "stock" and eng.has_stock_turbo and not eng.turbos.is_empty():
+	# [TURBO_*] sections
+	# Check if we have an upgraded turbo part installed
+	var turbo_part_id = eng.installed_parts.get(110, 0)
+	
+	if turbo_part_id > 0:
+		# We have an upgraded turbo part installed
+		var turbo_part = eng._get_part_by_id(turbo_part_id)
+		if not turbo_part.is_empty():
+			text += "[TURBO_0]\n"
+			
+			# Calculate turbo parameters based on the part's multiplier
+			var turbo_mult := float(turbo_part.get("mult", 1.0))
+			var stage := int(turbo_part.get("stage", 1))
+			
+			# Scale turbo parameters based on stage
+			var lag_dn := 0.95 - (stage - 1) * 0.05  # Faster response at higher stages
+			var lag_up := 0.97 - (stage - 1) * 0.05
+			var max_boost := 0.3 + (stage - 1) * 0.4  # More boost at higher stages
+			var wastegate := 0.5 + (stage - 1) * 0.2
+			var gamma := 1.0 + (stage - 1) * 0.2
+			
+			text += "LAG_DN=%.3f\n" % lag_dn
+			text += "LAG_UP=%.3f\n" % lag_up
+			text += "MAX_BOOST=%.2f\n" % max_boost
+			text += "WASTEGATE=%.2f\n" % wastegate
+			text += "DISPLAY_MAX_BOOST=%.2f\n" % max_boost
+			
+			# Calculate reference RPM based on limiter
+			var ref_rpm := int(eng.limiter * 0.7)
+			text += "REFERENCE_RPM=%d\n" % ref_rpm
+			text += "GAMMA=%.2f\n" % gamma
+			text += "COCKPIT_ADJUSTABLE=0\n"
+			text += "\n"
+			
+			# Adjust damage thresholds for upgraded turbo
+			text += "[DAMAGE]\n"
+			text += "TURBO_BOOST_THRESHOLD=%.2f\n" % (max_boost + 0.2)
+			text += "TURBO_DAMAGE_K=5.0\n"
+			text += "RPM_THRESHOLD=%.0f\n" % eng.rpm_threshold
+			text += "RPM_DAMAGE_K=%.3f\n" % eng.rpm_damage_k
+			text += "\n"
+	elif eng.has_stock_turbo and not eng.turbos.is_empty():
+		# Write stock turbos
 		for i in range(eng.turbos.size()):
 			var t = eng.turbos[i]
 			text += "[TURBO_%d]\n" % i
@@ -563,40 +604,21 @@ func _write_engine_ini(data_dir: String, eng: CarEngine) -> bool:
 			text += "GAMMA=%.3f\n" % float(t["gamma"])
 			text += "COCKPIT_ADJUSTABLE=%d\n" % (1 if bool(t["cockpit_adjustable"]) else 0)
 			text += "\n"
-	elif eng.current_turbo_tier != "" and eng.current_turbo_tier != "stock":
-		var turbo_data = eng._get_turbo_data(eng.current_turbo_tier)
-		if not turbo_data.is_empty():
-			text += "[TURBO_0]\n"
-			text += "LAG_DN=%.3f\n" % turbo_data["lag_dn"]
-			text += "LAG_UP=%.3f\n" % turbo_data["lag_up"]
-			text += "MAX_BOOST=%.2f\n" % turbo_data["max_boost"]
-			text += "WASTEGATE=%.2f\n" % turbo_data["wastegate"]
-			text += "DISPLAY_MAX_BOOST=%.2f\n" % turbo_data["max_boost"]
-			
-			# Calculate reference RPM based on limiter
-			var ref_rpm := int(eng.limiter * turbo_data["reference_rpm_mult"])
-			text += "REFERENCE_RPM=%d\n" % ref_rpm
-			text += "GAMMA=%.2f\n" % turbo_data["gamma"]
-			text += "COCKPIT_ADJUSTABLE=0\n"
-			text += "\n"
-	
-	# [DAMAGE]
-	text += "[DAMAGE]\n"
-	
-	# Adjust damage thresholds based on turbo presence
-	if eng.current_turbo_tier != "":
-		var turbo_data = eng._get_turbo_data(eng.current_turbo_tier)
-		if not turbo_data.is_empty():
-			var boost_threshold = turbo_data["max_boost"] + 0.2
-			text += "TURBO_BOOST_THRESHOLD=%.2f\n" % boost_threshold
-			text += "TURBO_DAMAGE_K=5.0\n"
-	elif eng.turbo_boost_threshold > 0.0:
-		text += "TURBO_BOOST_THRESHOLD=%.3f\n" % eng.turbo_boost_threshold
-		text += "TURBO_DAMAGE_K=%.3f\n" % eng.turbo_damage_k
-	
-	text += "RPM_THRESHOLD=%.0f\n" % eng.rpm_threshold
-	text += "RPM_DAMAGE_K=%.3f\n" % eng.rpm_damage_k
-	text += "\n"
+		
+		# [DAMAGE]
+		text += "[DAMAGE]\n"
+		if eng.turbo_boost_threshold > 0.0:
+			text += "TURBO_BOOST_THRESHOLD=%.3f\n" % eng.turbo_boost_threshold
+			text += "TURBO_DAMAGE_K=%.3f\n" % eng.turbo_damage_k
+		text += "RPM_THRESHOLD=%.0f\n" % eng.rpm_threshold
+		text += "RPM_DAMAGE_K=%.3f\n" % eng.rpm_damage_k
+		text += "\n"
+	else:
+		# No turbo at all - just write damage section
+		text += "[DAMAGE]\n"
+		text += "RPM_THRESHOLD=%.0f\n" % eng.rpm_threshold
+		text += "RPM_DAMAGE_K=%.3f\n" % eng.rpm_damage_k
+		text += "\n"
 	
 	var f := FileAccess.open(engine_ini_path, FileAccess.WRITE)
 	if f == null:
