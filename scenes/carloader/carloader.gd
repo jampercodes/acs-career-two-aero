@@ -1,7 +1,7 @@
 # carloader.gd
 extends Node2D
 
-var cars_base_dir := "D:/SteamLibrary/steamapps/common/assettocorsa/content/cars"
+var cars_base_dir := ""
 var loaded_cars: Array[Car] = []
 
 const CONFIG_PATH := "user://car_tuner_settings.cfg"
@@ -208,7 +208,7 @@ func _load_cars_from_root(root_dir: String, is_user_space: bool) -> void:
 	var extracted_count := 0
 
 	for folder_name in car_folders:
-		if not is_user_space and folder_name.begins_with("_cm"):
+		if not is_user_space and (folder_name.begins_with("__cm") or folder_name.begins_with("_cm") or folder_name.contains("cm_tmp_")):
 			continue
 
 		# Skip if this is a userdata car that's been finalized
