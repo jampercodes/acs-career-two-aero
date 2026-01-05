@@ -1,0 +1,128 @@
+[gd_scene load_steps=2 format=3 uid="uid://cm8kyl6nbwoir"]
+
+[ext_resource type="Script" uid="uid://dbgjxobgo1e3l" path="res://CarListUI.gd" id="1_404gt"]
+
+[node name="CarListUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_404gt")
+
+[node name="RootHBox" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 2000.0
+offset_bottom = 1440.0
+
+[node name="CarListContainer" type="VBoxContainer" parent="RootHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.6
+
+[node name="CarListLabel" type="Label" parent="RootHBox/CarListContainer"]
+layout_mode = 2
+text = "Cars"
+
+[node name="FilterBar" type="HBoxContainer" parent="RootHBox/CarListContainer"]
+layout_mode = 2
+
+[node name="CustomOnlyCheckBox" type="CheckBox" parent="RootHBox/CarListContainer/FilterBar"]
+layout_mode = 2
+text = "Show only owned/modified cars"
+
+[node name="CarListScrollContainer" type="ScrollContainer" parent="RootHBox/CarListContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="CarList" type="ItemList" parent="RootHBox/CarListContainer/CarListScrollContainer"]
+clip_contents = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+auto_width = true
+auto_height = true
+
+[node name="DataListContainer" type="VBoxContainer" parent="RootHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.44
+
+[node name="DataListHContainer" type="HBoxContainer" parent="RootHBox/DataListContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.0
+
+[node name="CategoryPanel" type="VBoxContainer" parent="RootHBox/DataListContainer/DataListHContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.0
+
+[node name="column1label" type="Label" parent="RootHBox/DataListContainer/DataListHContainer/CategoryPanel"]
+layout_mode = 2
+text = "Data Category"
+
+[node name="CategoryList" type="ItemList" parent="RootHBox/DataListContainer/DataListHContainer/CategoryPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.0
+max_text_lines = 40
+auto_height = true
+
+[node name="ValuePanel" type="VBoxContainer" parent="RootHBox/DataListContainer/DataListHContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.44
+
+[node name="CarNameLabel" type="Label" parent="RootHBox/DataListContainer/DataListHContainer/ValuePanel"]
+layout_mode = 2
+text = "Data"
+
+[node name="ValueListScrollContainer" type="ScrollContainer" parent="RootHBox/DataListContainer/DataListHContainer/ValuePanel"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.0
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="ValueList" type="ItemList" parent="RootHBox/DataListContainer/DataListHContainer/ValuePanel/ValueListScrollContainer"]
+clip_contents = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.88
+auto_width = true
+auto_height = true
+fixed_column_width = 800
+
+[node name="DetailsContainer" type="VBoxContainer" parent="RootHBox"]
+custom_minimum_size = Vector2(340, 240)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+size_flags_stretch_ratio = 1.71
+
+[node name="column3label" type="Label" parent="RootHBox/DetailsContainer"]
+layout_mode = 2
+text = "Preview Image"
+
+[node name="PreviewTexture" type="TextureRect" parent="RootHBox/DetailsContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.42
+expand_mode = 5
+
+[node name="specs" type="RichTextLabel" parent="RootHBox/DetailsContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Stats here"
+fit_content = true
+
+[node name="ModifyButton" type="Button" parent="RootHBox/DetailsContainer"]
+layout_mode = 2
+text = "Make copy and modify car"
+
+[connection signal="pressed" from="RootHBox/DetailsContainer/ModifyButton" to="." method="_on_modify_button_pressed"]

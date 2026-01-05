@@ -1,0 +1,50 @@
+[gd_scene load_steps=5 format=3 uid="uid://bwaa3urqalh23"]
+
+[ext_resource type="Script" uid="uid://c80nh6uhffa2b" path="res://carloader.gd" id="1_xehak"]
+[ext_resource type="Script" uid="uid://cah6ib6jewjv" path="res://acd_parser.gd" id="2_sbjsv"]
+[ext_resource type="PackedScene" uid="uid://cm8kyl6nbwoir" path="res://CarListUI.tscn" id="3_sbjsv"]
+[ext_resource type="PackedScene" uid="uid://ca2tvmpfeof1t" path="res://CarTunerUI.tscn" id="4_h6ysx"]
+
+[node name="Carloader" type="Node2D"]
+script = ExtResource("1_xehak")
+
+[node name="ACDParser" type="Node" parent="."]
+script = ExtResource("2_sbjsv")
+
+[node name="CarListUI" parent="." instance=ExtResource("3_sbjsv")]
+visible = false
+
+[node name="CarTunerUI" parent="." instance=ExtResource("4_h6ysx")]
+visible = false
+
+[node name="FileDialog" type="FileDialog" parent="."]
+oversampling_override = 1.0
+title = "Open acs.exe from Assetto Corsa directory"
+initial_position = 2
+size = Vector2i(800, 800)
+ok_button_text = "Open"
+dialog_hide_on_ok = true
+dialog_close_on_escape = false
+mode_overrides_title = false
+file_mode = 0
+display_mode = 1
+access = 2
+hidden_files_toggle_enabled = false
+file_filter_toggle_enabled = false
+file_sort_options_enabled = false
+folder_creation_enabled = false
+favorites_enabled = false
+
+[node name="findacserror" type="ConfirmationDialog" parent="."]
+oversampling_override = 1.0
+title = "Error"
+initial_position = 2
+size = Vector2i(445, 100)
+exclusive = false
+ok_button_text = "Try Again"
+dialog_text = "File selected is not acs.exe from Assetto Corsa directory"
+cancel_button_text = "Quit"
+
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="canceled" from="findacserror" to="." method="_on_findacserror_canceled"]
+[connection signal="confirmed" from="findacserror" to="." method="_on_findacserror_confirmed"]
