@@ -560,7 +560,7 @@ func _write_engine_ini(data_dir: String, eng: CarEngine) -> bool:
 			text += "[TURBO_0]\n"
 			
 			# Calculate turbo parameters based on the part's multiplier
-			var turbo_mult := float(turbo_part.get("mult", 1.0))
+			var _turbo_mult := float(turbo_part.get("mult", 1.0))
 			var stage := int(turbo_part.get("stage", 1))
 			
 			# Scale turbo parameters based on stage

@@ -170,27 +170,11 @@ func _populate_from_car() -> void:
 func _update_preview_texture() -> void:
 	if current_car == null:
 		preview_texrect.texture = null
-		preview_texrect.queue_redraw()
 		return
-	
-	var preview_node := current_car.get_node_or_null("Preview")
-	if preview_node == null:
-		preview_texrect.texture = null
-		return
-	
-	var tex: Texture2D = null
-	
-	if preview_node is Sprite2D:
-		tex = (preview_node as Sprite2D).texture
-	elif preview_node is Sprite3D:
-		tex = (preview_node as Sprite3D).texture
-	elif preview_node is TextureRect:
-		tex = (preview_node as TextureRect).texture
-	
-	if tex != null:
-		preview_texrect.texture = tex
-	else:
-		preview_texrect.texture = null
+
+	# Load only for the selected car (downscaled)
+	var tex := current_car.get_preview_texture(1024)
+	preview_texrect.texture = tex
 
 func _on_category_selected(index: int) -> void:
 	if index < 0 or index >= _categories.size():

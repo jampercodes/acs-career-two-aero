@@ -269,7 +269,7 @@ func get_all_upgrade_options() -> Array[Dictionary]:
 
 
 # Apply a brake upgrade
-func apply_brake_upgrade(car: Car, part_id: int) -> bool:
+func apply_brake_upgrade(_car: Car, part_id: int) -> bool:
 	var part = _get_part_by_id(part_id)
 	if part.is_empty():
 		printerr("Invalid brake part ID: ", part_id)
@@ -343,7 +343,7 @@ func can_remove_upgrades() -> bool:
 
 
 # Preview what torque would be with a specific upgrade
-func get_preview_torque(car: Car, part_id: int) -> float:
+func get_preview_torque(_car: Car, part_id: int) -> float:
 	var part = _get_part_by_id(part_id)
 	if part.is_empty():
 		return get_current_torque()

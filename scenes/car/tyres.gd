@@ -311,11 +311,11 @@ func build_upgraded_tyres_ini_text() -> String:
 	var dy = TARGET_DY.get(tier, {}).get(level, template_f.dy_ref)
 	var dx = TARGET_DX.get(tier, {}).get(level, template_f.dx_ref)
 
-	var name = "%s L%d" % [TIER_DISPLAY.get(tier, "Tyres"), level]
+	var tiername = "%s L%d" % [TIER_DISPLAY.get(tier, "Tyres"), level]
 	var short = "%s%d" % [TIER_SHORT.get(tier, "TY"), level]
 
-	var front_section := _compound_to_ini_section(template_f, "FRONT_%d" % new_idx, name, short, new_idx, dy, dx)
-	var rear_section := _compound_to_ini_section(template_r, "REAR_%d" % new_idx, name, short, new_idx, dy, dx)
+	var front_section := _compound_to_ini_section(template_f, "FRONT_%d" % new_idx, tiername, short, new_idx, dy, dx)
+	var rear_section := _compound_to_ini_section(template_r, "REAR_%d" % new_idx, tiername, short, new_idx, dy, dx)
 
 	# Add matching thermal sections if we have templates
 	var thermal_front_text := ""
@@ -522,10 +522,10 @@ func _get_max_compound_index_from_parsed() -> int:
 	return max_idx
 
 
-func _compound_to_ini_section(template: TyreCompound, section_name: String, name: String, short: String, idx: int, dy: float, dx: float) -> String:
+func _compound_to_ini_section(template: TyreCompound, section_name: String, ininame: String, short: String, _idx: int, dy: float, dx: float) -> String:
 	var t := ""
 	t += "[%s]\n" % section_name
-	t += "NAME=%s\n" % name
+	t += "NAME=%s\n" % ininame
 	t += "SHORT_NAME=%s\n" % short
 
 	t += "WIDTH=%.4f\n" % template.width

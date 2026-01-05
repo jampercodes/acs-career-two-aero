@@ -173,29 +173,15 @@ func _populate_from_car() -> void:
 			category_list.select(0)
 			_on_category_selected(0)
 
-
+		
 func _update_preview_texture() -> void:
 	if current_car == null:
-		return
-	
-	var preview_node := current_car.get_node_or_null("Preview")
-	if preview_node == null:
 		preview_texrect.texture = null
 		return
-	
-	var tex: Texture2D = null
-	
-	if preview_node is Sprite2D:
-		tex = (preview_node as Sprite2D).texture
-	elif preview_node is Sprite3D:
-		tex = (preview_node as Sprite3D).texture
-	elif preview_node is TextureRect:
-		tex = (preview_node as TextureRect).texture
-	
-	if tex != null:
-		preview_texrect.texture = tex
-	else:
-		preview_texrect.texture = null
+
+	# Load only for the selected car (downscaled)
+	var tex := current_car.get_preview_texture(1024)
+	preview_texrect.texture = tex
 
 func _on_category_selected(index: int) -> void:
 	if index < 0 or index >= _categories.size():
@@ -646,12 +632,12 @@ func _show_engine_swap_dialog() -> void:
 		
 		var hp := other_engine.stock_hp
 		var diff := hp - current_engine.stock_hp
-		var sign := "+" if diff > 0 else ""
+		var thissign := "+" if diff > 0 else ""
 		
 		var text := "%s - %.0f bhp (%s%.0f bhp)" % [
 			car.screen_name if car.screen_name != "" else car.car_id,
 			hp,
-			sign,
+			thissign,
 			diff
 		]
 		

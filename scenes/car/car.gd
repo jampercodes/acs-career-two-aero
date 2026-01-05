@@ -9,6 +9,9 @@ class_name Car
 @export var original_id: String = ""   # base folder name without js_ prefix
 @export var is_custom: bool = false    # true if this is a user-space clone
 
+var preview_image_path: String = ""
+var _preview_texture: Texture2D = null
+
 # Basic car.ini values
 var screen_name: String = ""
 var graphics_offset: Vector3 = Vector3.ZERO
@@ -102,14 +105,14 @@ func load_from_folder(car_dir_path: String) -> void:
 
 	# Once all parts are loaded, compute performance metrics
 	_compute_performance_metrics()
-	_load_preview_sprite(base)
+	preview_image_path = _find_preview_image_path(base)
 
 func _store_stock_values():
 	if has_node("Brakes"):
 		brakes.store_stock_values()
-	var tyres := get_node_or_null("Tyres") as Tyres
-	if tyres:
-		tyres.store_stock_values()
+	var stocktyres := get_node_or_null("Tyres") as Tyres
+	if stocktyres:
+		stocktyres.store_stock_values()
 	if has_node("GeneralUpgrades"):
 		generalupgrades.store_stock_values()
 
@@ -133,6 +136,64 @@ func _load_car_ini(ini: Dictionary) -> void:
 		IniParser.get_str(secb, "INERTIA", "0,0,0")
 	)
 
+
+func _find_preview_image_path(base_dir: String) -> String:
+	var skins_dir := base_dir + "/skins"
+	if not DirAccess.dir_exists_absolute(skins_dir):
+		return ""
+
+	var d := DirAccess.open(skins_dir)
+	if d == null:
+		return ""
+
+	for skin_name in d.get_directories():
+		if skin_name == "." or skin_name == "..":
+			continue
+
+		var skin_dir := skins_dir + "/" + skin_name
+		var png_path := skin_dir + "/preview.png"
+		var jpg_path := skin_dir + "/preview.jpg"
+
+		if FileAccess.file_exists(png_path):
+			return png_path
+		if FileAccess.file_exists(jpg_path):
+			return jpg_path
+
+	return ""
+
+func get_preview_texture(max_size: int = 1024) -> Texture2D:
+	# Cache
+	if _preview_texture != null:
+		return _preview_texture
+
+	if preview_image_path == "":
+		return null
+
+	var img := Image.new()
+	var err := img.load(preview_image_path)
+	if err != OK:
+		printerr("Failed to load preview image: ", preview_image_path, " (err ", err, ")")
+		return null
+
+	# Downscale to reduce VRAM usage (key for low-end GPUs)
+	var w := img.get_width()
+	var h := img.get_height()
+	if w > max_size or h > max_size:
+		var scale := float(max_size) / float(max(w, h))
+		var nw := int(round(w * scale))
+		var nh := int(round(h * scale))
+		img.resize(nw, nh, Image.INTERPOLATE_LANCZOS)
+
+	# Ensure sane format (optional but helpful)
+	if img.get_format() != Image.FORMAT_RGBA8:
+		img.convert(Image.FORMAT_RGBA8)
+
+	var tex := ImageTexture.create_from_image(img)
+	_preview_texture = tex
+	return _preview_texture
+
+func clear_preview_cache() -> void:
+	_preview_texture = null
 
 func _load_ui_name(base_dir: String, ini: Dictionary) -> void:
 	# Try ui/ui_car.json first
