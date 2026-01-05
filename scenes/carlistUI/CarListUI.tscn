@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cm8kyl6nbwoir"]
 
-[ext_resource type="Script" uid="uid://dbgjxobgo1e3l" path="res://CarListUI.gd" id="1_404gt"]
+[ext_resource type="Script" uid="uid://dbgjxobgo1e3l" path="res://scenes/carlistUI/CarListUI.gd" id="1_404gt"]
 
 [node name="CarListUI" type="Control"]
 layout_mode = 3

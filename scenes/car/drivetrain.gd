@@ -156,9 +156,7 @@ func get_all_upgrade_options() -> Array[Dictionary]:
 	for archetype_id in archetypes.keys():
 		var archetype = archetypes[archetype_id]
 		
-		# Skip if this is the current archetype
-		if archetype_id == current_archetype:
-			continue
+		# DON'T skip current archetype - let UI show it with checkmark
 		
 		options.append({
 			"archetype_id": archetype_id,

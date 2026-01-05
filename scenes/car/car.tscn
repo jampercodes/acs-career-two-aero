@@ -1,0 +1,41 @@
+[gd_scene load_steps=10 format=3 uid="uid://dt1t2njw8non0"]
+
+[ext_resource type="Script" uid="uid://2cqf84y1v61r" path="res://scenes/car/car.gd" id="1_7822p"]
+[ext_resource type="Script" uid="uid://cm1iddckayn0q" path="res://scenes/car/aero.gd" id="2_uoj53"]
+[ext_resource type="Script" uid="uid://cvv1e80vlkjvk" path="res://scenes/car/engine.gd" id="3_k61xc"]
+[ext_resource type="Script" uid="uid://b3lldpa8quru2" path="res://scenes/car/brakes.gd" id="4_06lh1"]
+[ext_resource type="Script" uid="uid://dsxf4k4tnj4tn" path="res://scenes/car/suspensions.gd" id="5_td361"]
+[ext_resource type="Script" uid="uid://cqtfraf66fdap" path="res://scenes/car/drivetrain.gd" id="6_72krn"]
+[ext_resource type="Script" uid="uid://col6ee8310cx8" path="res://scenes/car/electronics.gd" id="7_v0hk8"]
+[ext_resource type="Script" uid="uid://dmgfu5pps77s6" path="res://scenes/car/generalupgrades.gd" id="8_lpol0"]
+[ext_resource type="Script" uid="uid://c2a0yfgmqggyv" path="res://scenes/car/tyres.gd" id="10_u5era"]
+
+[node name="Car" type="Node2D"]
+script = ExtResource("1_7822p")
+
+[node name="Preview" type="Sprite2D" parent="."]
+visible = false
+
+[node name="Aero" type="Node" parent="."]
+script = ExtResource("2_uoj53")
+
+[node name="Engine" type="Node" parent="."]
+script = ExtResource("3_k61xc")
+
+[node name="Brakes" type="Node" parent="."]
+script = ExtResource("4_06lh1")
+
+[node name="Suspensions" type="Node" parent="."]
+script = ExtResource("5_td361")
+
+[node name="Drivetrain" type="Node" parent="."]
+script = ExtResource("6_72krn")
+
+[node name="Electronics" type="Node" parent="."]
+script = ExtResource("7_v0hk8")
+
+[node name="General" type="Node" parent="."]
+script = ExtResource("8_lpol0")
+
+[node name="Tyres" type="Node" parent="."]
+script = ExtResource("10_u5era")

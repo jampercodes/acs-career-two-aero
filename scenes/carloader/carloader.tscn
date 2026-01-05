@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://bwaa3urqalh23"]
 
-[ext_resource type="Script" uid="uid://c80nh6uhffa2b" path="res://carloader.gd" id="1_xehak"]
-[ext_resource type="Script" uid="uid://cah6ib6jewjv" path="res://acd_parser.gd" id="2_sbjsv"]
-[ext_resource type="PackedScene" uid="uid://cm8kyl6nbwoir" path="res://CarListUI.tscn" id="3_sbjsv"]
-[ext_resource type="PackedScene" uid="uid://ca2tvmpfeof1t" path="res://CarTunerUI.tscn" id="4_h6ysx"]
+[ext_resource type="Script" uid="uid://c80nh6uhffa2b" path="res://scenes/carloader/carloader.gd" id="1_xehak"]
+[ext_resource type="Script" uid="uid://cah6ib6jewjv" path="res://helpers/acd_parser.gd" id="2_sbjsv"]
+[ext_resource type="PackedScene" uid="uid://cm8kyl6nbwoir" path="res://scenes/carlistUI/CarListUI.tscn" id="3_sbjsv"]
+[ext_resource type="PackedScene" uid="uid://ca2tvmpfeof1t" path="res://scenes/cartunerUI/CarTunerUI.tscn" id="4_h6ysx"]
 
 [node name="Carloader" type="Node2D"]
 script = ExtResource("1_xehak")

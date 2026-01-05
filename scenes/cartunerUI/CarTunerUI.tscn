@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://ca2tvmpfeof1t"]
 
-[ext_resource type="Script" uid="uid://dy4fv5r02qcb5" path="res://car_tuner_ui.gd" id="1_ablte"]
+[ext_resource type="Script" uid="uid://dy4fv5r02qcb5" path="res://scenes/cartunerUI/car_tuner_ui.gd" id="1_ablte"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ablte"]
 

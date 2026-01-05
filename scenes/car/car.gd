@@ -263,7 +263,29 @@ func _compute_performance_metrics() -> void:
 			var max_ratio := 4.0     # serious race brakes
 			var norm_br = (brake_ratio - min_ratio) / (max_ratio - min_ratio)
 			braking_index = clamp(1.0 + 9.0 * norm_br, 1.0, 10.0)
+	
+	var drivetrain_index := 1.0
+	if has_node("Drivetrain"):
+		var dt := drivetrain as Drivetrain
+		
+		# AWD bonus for traction, RWD neutral, FWD slight penalty
+		match dt.traction_type:
+			"AWD":
+				drivetrain_index = 1.2  # 20% bonus
+			"RWD":
+				drivetrain_index = 1.0  # Neutral
+			"FWD":
+				drivetrain_index = 0.90 # 10% penalty
 
+	# Apply drivetrain multiplier to power and cornering
+	if drivetrain_index != 1.0:
+		power_index *= drivetrain_index
+		cornering_index *= drivetrain_index
+		
+		# Keep within 1-10 range
+		power_index = clamp(power_index, 1.0, 10.0)
+		cornering_index = clamp(cornering_index, 1.0, 10.0)
+	
 	# Tyre / mechanical grip (best compound)
 	if has_node("Tyres"):
 		tyre_cornering_index = tyres.best_mechanical_grip_index

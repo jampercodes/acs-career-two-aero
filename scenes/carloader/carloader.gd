@@ -360,7 +360,7 @@ func _remove_drivetrain_archetype(car: Car) -> bool:
 	return true
 
 func _load_car(car_dir: String, is_custom: bool = false, original_id: String = "") -> Car:
-	var CarScene := preload("res://Car.tscn")
+	var CarScene := preload("res://scenes/car/car.tscn")
 	var car := CarScene.instantiate() as Car
 	car.car_dir = car_dir
 	car.is_custom = is_custom
