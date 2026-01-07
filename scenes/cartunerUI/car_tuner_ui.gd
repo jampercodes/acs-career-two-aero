@@ -203,6 +203,35 @@ func _populate_parts_for_node(node: Node) -> void:
 	parts_list.clear()
 	remove_button.disabled = true
 	
+	if node is Aero:
+		var aero := node as Aero
+		var upgrades := aero.get_all_upgrade_options()
+
+		# Group by stage
+		var by_stage: Dictionary = {1: [], 2: [], 3: []}
+		for upgrade in upgrades:
+			var stage: int = upgrade.get("stage", 1)
+			if by_stage.has(stage):
+				by_stage[stage].append(upgrade)
+		
+		# Display parts organized by stage
+		for stage in [1, 2, 3]:
+			if by_stage[stage].is_empty():
+				continue
+			
+			parts_list.add_item("─── STAGE %d ───" % stage)
+			parts_list.set_item_disabled(parts_list.get_item_count() - 1, true)
+			
+			for upgrade in by_stage[stage]:
+				var display_text: String = upgrade["display_name"]
+				display_text += " - $%d" % upgrade["cost"]
+				
+				parts_list.add_item(display_text)
+				parts_list.set_item_metadata(parts_list.get_item_count() - 1, upgrade)
+		
+		remove_button.disabled = true
+		return
+
 	if node is Brakes:
 		var brakes := node as Brakes
 		var upgrades := brakes.get_all_upgrade_options()
@@ -585,6 +614,8 @@ func _on_part_selected(index: int) -> void:
 	if _selected_upgrade.get("is_engine_swap", false):
 		_show_engine_swap_dialog()
 		return
+	if _current_category_node is Aero:
+		_update_aero_upgrade_preview()
 	if _current_category_node is Brakes:
 		_update_brake_upgrade_preview()
 	elif _current_category_node is CarEngine:
@@ -890,6 +921,47 @@ func _update_electronics_upgrade_preview() -> void:
 			cost_label.text = "[center][b]Cost: $%d[/b][/center]" % cost
 			purchase_button.disabled = false
 
+func _update_aero_upgrade_preview() ->void:
+	if _selected_upgrade.is_empty():
+		stat_changes.text = ""
+		cost_label.text = ""
+		purchase_button.disabled = true
+		return
+	
+	if not _current_category_node is Aero:
+		return
+	
+	var aero := _current_category_node as Aero
+	var part_id: int = _selected_upgrade.get("id", 0)
+	var cost: int = _selected_upgrade.get("cost", 0)
+	var part_name: String = _selected_upgrade.get("name", "")
+	var replaces_id: int = _selected_upgrade.get("replaces_id", 0)
+	
+	if part_id == 0:
+		return
+	
+	# Check if already installed
+	var already_installed := aero.is_part_installed(part_id)
+	
+	stat_changes.clear()
+	stat_changes.text = "[b]Brake Upgrade Preview[/b]\n\n"
+	
+	if already_installed:
+		stat_changes.text += "[color=yellow]Already Installed[/color]\n\n"
+		stat_changes.text += "[b]Part:[/b] %s\n" % part_name
+	# else:
+
+	
+	# Update cost display
+	cost_label.clear()
+	if already_installed:
+		cost_label.text = "[center][b]Already Installed[/b][/center]"
+		purchase_button.disabled = true
+	else:
+		cost_label.text = "[center][b]Cost: $%d[/b][/center]" % cost
+		purchase_button.disabled = false
+		print("hello")
+
 func _update_brake_upgrade_preview() -> void:
 	if _selected_upgrade.is_empty():
 		stat_changes.text = ""
@@ -1088,6 +1160,22 @@ func _tier_label(tier: String) -> String:
 
 func _on_purchase_pressed() -> void:
 	if _selected_upgrade.is_empty():
+		return
+	if _current_category_node is Aero:
+		var aero := _current_category_node as Aero
+		var part_id: int = _selected_upgrade.get("id", 0)
+		
+		if part_id == 0:
+			return
+		
+		if aero.apply_aero_upgrade(current_car, part_id):
+			current_car._compute_performance_metrics()
+			
+			car_has_modifications = true
+			finalize_button.disabled = false
+			
+			_populate_from_car()
+			print("Purchased aero upgrade: %s" % _selected_upgrade.get("name", ""))
 		return
 	# Brakes: part-based system
 	if _current_category_node is Brakes:

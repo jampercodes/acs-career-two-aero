@@ -82,6 +82,14 @@ var ref_downforce_N: float = 0.0
 var ref_drag_N: float = 0.0
 var ref_downforce_ratio: float = 0.0   # downforce / static weight (filled in Car)
 
+const AERO_PARTS = [
+	# Stage 3 - Race upgrades
+	{"id": 901, "name": "wing", "stage": 3, "super_type": 901, "mult": 0.975, "cost": 2500, "desc": "Large wing"},
+]
+
+# Currently installed weight reduction parts (by super_type)
+var installed_parts: Dictionary = {}  # super_type -> part_id
+
 func store_stock_values():
 	pass
 
@@ -191,6 +199,7 @@ func load_from_data_dir(data_dir: String) -> void:
 
 	# After wings & maps are loaded, compute reference aero forces
 	_compute_reference_aero()
+
 
 
 func _compute_reference_aero() -> void:
@@ -306,3 +315,76 @@ func _compute_reference_aero() -> void:
 
 		ref_downforce_N += df_map
 		ref_drag_N += drag_map
+
+# ============================================================================
+# AERO PARTS
+# ============================================================================
+
+# Get part definition by ID
+func _get_part_by_id(part_id: int) -> Dictionary:
+	for part in AERO_PARTS:
+		if part["id"] == part_id:
+			return part
+	return {}
+
+# Get currently installed part in a specific upgrade line
+func _get_installed_part_in_line(super_type: int) -> Dictionary:
+	if installed_parts.has(super_type):
+		return _get_part_by_id(installed_parts[super_type])
+	return {}
+
+# Check if a part is currently installed
+func is_part_installed(part_id: int) -> bool:
+	return installed_parts.values().has(part_id)
+
+# Check if any part in the same upgrade line is installed
+func has_part_in_line(super_type: int) -> bool:
+	return installed_parts.has(super_type)
+
+# Get all available upgrade options
+func get_all_upgrade_options() -> Array[Dictionary]:
+	var options: Array[Dictionary] = []
+
+	for part in AERO_PARTS:
+		var part_id: int = part["id"]
+		var super_type: int = part["super_type"]
+		var installed = is_part_installed(part_id)
+		var current_in_line = _get_installed_part_in_line(super_type)
+
+		var display_name := "[Stage %d] %s" % [part["stage"], part["name"]]
+
+		if installed:
+			display_name = "✓ " + display_name
+		elif not current_in_line.is_empty():
+			display_name += " (replaces %s)" % current_in_line["name"]
+
+		options.append({
+			"id": part_id,
+			"name": part["name"],
+			"stage": part["stage"],
+			"super_type": super_type,
+			"mult": part["mult"],
+			"cost": part["cost"],
+			"desc": part["desc"],
+			"display_name": display_name,
+			"installed": installed,
+			"replaces_id": current_in_line.get("id", 0)
+		})
+
+	return options
+
+# Apply a aero upgrade
+func apply_aero_upgrade(_car: Car, part_id: int) -> bool:
+	var part = _get_part_by_id(part_id)
+	if part.is_empty():
+		printerr("Invalid earo part ID: ", part_id)
+		return false
+
+	var super_type: int = part["super_type"]
+
+	# Install part (replacing any existing part in the same line)
+	installed_parts[super_type] = part_id
+
+	# probebly need to do some data stuf idk
+
+	return true
