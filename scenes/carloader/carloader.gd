@@ -1,6 +1,8 @@
 # carloader.gd
 extends Node2D
 
+var testing = true
+
 var cars_base_dir := ""
 var loaded_cars: Array[Car] = []
 
@@ -207,7 +209,12 @@ func _load_cars_from_root(root_dir: String, is_user_space: bool) -> void:
 	var acd_extractor := AcdExtractor.new()
 	var extracted_count := 0
 
+	var counter = 0
 	for folder_name in car_folders:
+		if testing:
+			if counter > 10:
+				break
+
 		if not is_user_space and (folder_name.begins_with("__cm") or folder_name.begins_with("_cm") or folder_name.contains("cm_tmp_")):
 			continue
 
@@ -247,6 +254,7 @@ func _load_cars_from_root(root_dir: String, is_user_space: bool) -> void:
 			_patch_ui_car_json_labels(abs_dir)
 
 		_load_car(car_dir, is_user_space, original_id)
+		counter += 1
 	
 	if extracted_count > 0:
 		print("[CarLoader] Extracted %d data.acd files" % extracted_count)

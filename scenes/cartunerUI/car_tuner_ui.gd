@@ -616,10 +616,13 @@ func _on_part_selected(index: int) -> void:
 		return
 	if _current_category_node is Aero:
 		_update_aero_upgrade_preview()
-	if _current_category_node is Brakes:
+		return
+	elif _current_category_node is Brakes:
 		_update_brake_upgrade_preview()
+		return
 	elif _current_category_node is CarEngine:
 		_update_engine_upgrade_preview()
+		return
 	elif _current_category_node is Electronics:
 		_update_electronics_upgrade_preview()
 		return
@@ -638,7 +641,7 @@ func _on_part_selected(index: int) -> void:
 		cost_label.text = ""
 		purchase_button.disabled = true
 		remove_button.disabled = true
-		
+
 func _show_engine_swap_dialog() -> void:
 	_engine_swap_list.clear()
 	_selected_swap_car = null
@@ -676,7 +679,7 @@ func _show_engine_swap_dialog() -> void:
 		_engine_swap_list.set_item_metadata(_engine_swap_list.get_item_count() - 1, car)
 	
 	_engine_swap_popup.popup_centered()
-	
+
 func _on_engine_swap_car_selected(index: int) -> void:
 	_selected_swap_car = _engine_swap_list.get_item_metadata(index)
 	_engine_swap_confirm.disabled = (_selected_swap_car == null)
@@ -685,7 +688,7 @@ func _on_engine_swap_car_selected(index: int) -> void:
 		# Mark that purchase should perform a swap
 		_selected_upgrade = {"is_engine_swap": true}
 		_update_engine_swap_preview(_selected_swap_car)
-		
+
 func _update_engine_swap_preview(swap_car: Car) -> void:
 	var current_engine := current_car.get_node_or_null("Engine") as CarEngine
 	var swap_engine := swap_car.get_node_or_null("Engine") as CarEngine
@@ -731,7 +734,7 @@ func _update_engine_swap_preview(swap_car: Car) -> void:
 		cost_label.text += "[center][b]Net Cost: $%d[/b][/center]" % net_cost
 	
 	purchase_button.disabled = false
-	
+
 func _calculate_swap_cost(current_hp: float, new_hp: float) -> int:
 	# Base cost scaling: $10 per HP difference
 	var hp_diff = abs(new_hp - current_hp)
@@ -745,13 +748,13 @@ func _calculate_swap_cost(current_hp: float, new_hp: float) -> int:
 		return max(min_cost / 2, base_cost / 2)
 	
 	return max(min_cost, base_cost)
-	
+
 func _on_engine_swap_cancel() -> void:
 	_engine_swap_popup.hide()
 	stat_changes.text = ""
 	cost_label.text = ""
 	purchase_button.disabled = true
-	
+
 func _on_engine_swap_confirm() -> void:
 	if not _selected_swap_car:
 		return
@@ -773,7 +776,7 @@ func _on_engine_swap_confirm() -> void:
 	
 	_populate_from_car()
 	print("Engine swapped from %s" % _selected_swap_car.car_id)
-		
+
 func _update_tyre_upgrade_preview() -> void:
 	if _selected_upgrade.is_empty():
 		stat_changes.text = ""
@@ -960,7 +963,6 @@ func _update_aero_upgrade_preview() ->void:
 	else:
 		cost_label.text = "[center][b]Cost: $%d[/b][/center]" % cost
 		purchase_button.disabled = false
-		print("hello")
 
 func _update_brake_upgrade_preview() -> void:
 	if _selected_upgrade.is_empty():

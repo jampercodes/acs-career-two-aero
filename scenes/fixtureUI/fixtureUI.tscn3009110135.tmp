@@ -1,0 +1,93 @@
+[gd_scene load_steps=5 format=3 uid="uid://mkex1136wpm"]
+
+[ext_resource type="Texture2D" uid="uid://bf7jte06krtii" path="res://scenes/fixtureUI/test photos/side fuwe.jpg" id="1_jvefn"]
+[ext_resource type="Script" uid="uid://d0udkr4ntqckg" path="res://scenes/fixtureUI/fixture_ui.gd" id="1_q65cb"]
+[ext_resource type="Texture2D" uid="uid://c5ykrmc4xks17" path="res://fixtures/templates/wing_0/side.png" id="2_q65cb"]
+[ext_resource type="Script" uid="uid://cp1w7rot4w5h8" path="res://scenes/fixtureUI/wing.gd" id="4_3eukl"]
+
+[node name="FixtureUi" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_q65cb")
+
+[node name="face 1" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="car pick" type="TextureRect" parent="face 1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_jvefn")
+
+[node name="wing" type="TextureRect" parent="face 1"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -51.5
+offset_top = -56.0
+offset_right = 51.5
+offset_bottom = 56.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(51.5, 112)
+texture = ExtResource("2_q65cb")
+script = ExtResource("4_3eukl")
+
+[node name="Button" type="Button" parent="face 1/wing"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="face 2" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="face 2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="next" type="Button" parent="."]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -657.0
+offset_top = -144.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 45
+text = "Next"
+
+[connection signal="button_down" from="face 1/wing/Button" to="face 1/wing" method="_on_button_button_down"]
+[connection signal="button_up" from="face 1/wing/Button" to="face 1/wing" method="_on_button_button_up"]
